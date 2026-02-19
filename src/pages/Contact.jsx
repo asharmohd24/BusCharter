@@ -1,15 +1,10 @@
-/**
- * Contact Page
- * ======================
- * Contact information and form with country code phone input
- */
-
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { siteData } from '../data/data';
 import PageBanner from '../components/PageBanner';
 import useForm from '../hooks/useForm';
+import { getRecaptchaToken } from '../utils/recaptcha';
 
-// Country data: ISO code, dial code, name
+// Complete country list (same as above)
 const countries = [
   { code: 'US', dial: '+1', name: 'United States' },
   { code: 'GB', dial: '+44', name: 'United Kingdom' },
@@ -73,7 +68,7 @@ const countries = [
   { code: 'LB', dial: '+961', name: 'Lebanon' },
 ];
 
-// Searchable country code dropdown component
+// CountryCodeSelect component (same as above)
 const CountryCodeSelect = ({ value, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -190,11 +185,12 @@ const CountryCodeSelect = ({ value, onChange }) => {
 const Contact = () => {
   const [phoneCountry, setPhoneCountry] = useState('US');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
 
   const initialValues = {
     name: '',
     email: '',
-    phone: '',
     subject: '',
     message: '',
   };
@@ -208,14 +204,12 @@ const Contact = () => {
   const {
     values,
     errors,
-    isSubmitting,
-    submitStatus,
     handleChange,
     handleHoneypotChange,
-    handleSubmit,
+    resetForm,
   } = useForm(initialValues, validationRules);
 
-  // Detect user's country on mount
+  // Detect user's country
   useEffect(() => {
     const detectCountry = async () => {
       try {
@@ -254,25 +248,57 @@ const Contact = () => {
     setPhoneNumber(e.target.value);
   };
 
-  const onSubmit = useCallback(async (formData) => {
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+
+    // Check if there are validation errors from useForm
+    if (Object.keys(errors).length > 0) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    let token = '';
+    try {
+      token = await getRecaptchaToken('contact_form');
+    } catch (error) {
+      setSubmitStatus({ success: false, message: 'reCAPTCHA verification failed. Please refresh and try again.' });
+      setIsSubmitting(false);
+      return;
+    }
+
     const selectedCountry = countries.find(c => c.code === phoneCountry) || countries[0];
     const fullPhone = `${selectedCountry.dial} ${phoneNumber}`;
 
-    const submissionData = {
-      ...formData,
-      phone: fullPhone,
-      phoneCountry,
-      phoneNumber,
+    const payload = {
+      form_type: 'contact',
+      recaptcha_token: token,
+      name: values.name,
+      email: values.email,
+      fullPhone,
+      subject: values.subject,
+      message: values.message,
+      website: '', // honeypot
     };
 
-    console.log('Contact form submitted:', submissionData);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    return { success: true, message: 'Your message has been sent successfully!' };
-  }, [phoneCountry, phoneNumber]);
-
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    handleSubmit(onSubmit, { action: 'contact_form' });
+    try {
+      const response = await fetch(import.meta.env.VITE_FORM_HANDLER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+      setSubmitStatus(result);
+      if (result.success) {
+        resetForm();
+        setPhoneNumber('');
+      }
+    } catch (error) {
+      setSubmitStatus({ success: false, message: 'Network error. Please try again.' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -283,7 +309,6 @@ const Contact = () => {
       <section className="contact-section pt-60 pb-60">
         <div className="container-fluid">
           <div className="contact-info-grid">
-            {/* Location Card */}
             <div className="contact-block">
               <div className="icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
@@ -294,7 +319,6 @@ const Contact = () => {
               <p>{siteData.contact.address.full}</p>
             </div>
 
-            {/* Phone Card */}
             <div className="contact-block">
               <div className="icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
@@ -306,7 +330,6 @@ const Contact = () => {
               <a href={`mailto:${siteData.contact.email}`}>{siteData.contact.email}</a>
             </div>
 
-            {/* Hours Card */}
             <div className="contact-block">
               <div className="icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
@@ -334,17 +357,17 @@ const Contact = () => {
                   Have a question or need assistance? Fill out the form below and we'll get back to you as soon as possible.
                 </p>
               </div>
-              
+
               <div className="form-section">
                 <form onSubmit={handleFormSubmit} noValidate>
-                  {/* Honeypot - hidden from users */}
+                  {/* Honeypot */}
                   <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
-                    <input 
-                      type="text" 
-                      name="website" 
-                      tabIndex={-1} 
-                      autoComplete="off" 
-                      onChange={handleHoneypotChange} 
+                    <input
+                      type="text"
+                      name="website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      onChange={handleHoneypotChange}
                     />
                   </div>
 
@@ -437,9 +460,9 @@ const Contact = () => {
                       </div>
                     </div>
                     <div className="col-12">
-                      <button 
-                        type="submit" 
-                        className="cus-btn" 
+                      <button
+                        type="submit"
+                        className="cus-btn"
                         disabled={isSubmitting}
                       >
                         {isSubmitting ? 'Sending...' : 'Send Message'}
@@ -459,7 +482,7 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* Map Section - PROPER SPACING */}
+      {/* Map Section */}
       <section className="map-section">
         <div className="container-fluid">
           <div className="map-wrapper">

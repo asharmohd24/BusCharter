@@ -433,7 +433,7 @@ export const siteData = {
       category: "Premium Coach",
       price: 899,
       priceUnit: "day",
-      image: "/assets/images/benztou.png",
+      image: "/assets/images/benztou.jpg",
       features: ["61 Seats", "Tri-axle Stability", "Large Luggage Hold", "Onboard Restroom", "Air Conditioning"],
       specs: {
         passengers: 61,
@@ -566,7 +566,7 @@ export const siteData = {
       category: "Luxury Sedan",
       price: 399,
       priceUnit: "day",
-      image: "/assets/images/sclass.png",
+      image: "/assets/images/sclass.jpg",
       features: ["Leather Interior", "Massaging Seats", "Ambient Lighting", "Burmester Sound System", "Panoramic Sunroof"],
       specs: {
         passengers: 4,
@@ -598,7 +598,7 @@ export const siteData = {
       category: "Luxury SUV",
       price: 499,
       priceUnit: "day",
-      image: "/assets/images/escalade.png",
+      image: "/assets/images/escalade.jpg",
       features: ["Leather Captain's Chairs", "Massive Cargo Space", "Rear Entertainment", "AKG Sound System", "Magnetic Ride Control"],
       specs: {
         passengers: 7,
@@ -630,7 +630,7 @@ export const siteData = {
       category: "Luxury Sedan",
       price: 429,
       priceUnit: "day",
-      image: "/assets/images/7series.png",
+      image: "/assets/images/7series.jpg",
       features: ["Theater Screen", "Panoramic Sky Lounge", "Bowers & Wilkins Sound", "Executive Lounge Seating", "BMW Interaction Bar"],
       specs: {
         passengers: 4,

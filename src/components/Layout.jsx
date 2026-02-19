@@ -9,7 +9,7 @@ import Header from './Header';
 import Footer from './Footer';
 import ScrollToTop from './ScrollToTop';
 import Preloader from './Preloader';
-
+import FloatingWhatsApp from './FloatingWhatsApp';
 const Layout = () => {
   return (
     <>
@@ -19,6 +19,7 @@ const Layout = () => {
         <Outlet />
       </main>
       <Footer />
+      <FloatingWhatsApp />
       <ScrollToTop />
     </>
   );

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import PageBanner from '../components/PageBanner';
 import { getRecaptchaToken } from '../utils/recaptcha';
 
-// Country data: ISO code, dial code, name
+// Complete country list
 const countries = [
   { code: 'US', dial: '+1', name: 'United States' },
   { code: 'GB', dial: '+44', name: 'United Kingdom' },
@@ -206,13 +206,11 @@ const Booking = () => {
   const [detectedCountry, setDetectedCountry] = useState('US');
   const [countryDetected, setCountryDetected] = useState(false);
 
-  // Refs for Google Places Autocomplete
   const pickupRef = useRef(null);
   const dropoffRef = useRef(null);
   const autocompletePickup = useRef(null);
   const autocompleteDropoff = useRef(null);
 
-  // Get today's date in YYYY-MM-DD format for min attribute
   const today = new Date().toISOString().split('T')[0];
 
   // Detect user's country
@@ -255,7 +253,7 @@ const Booking = () => {
   // Load Google Maps and setup autocomplete
   useEffect(() => {
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-    
+
     if (!apiKey) {
       console.error('Google Maps API key is missing.');
       setApiKeyMissing(true);
@@ -309,7 +307,7 @@ const Booking = () => {
 
     return () => {
       document.querySelectorAll('.pac-container').forEach(el => el.remove());
-      
+
       if (autocompletePickup.current) {
         window.google.maps.event.clearInstanceListeners(autocompletePickup.current);
         autocompletePickup.current = null;
@@ -321,7 +319,6 @@ const Booking = () => {
     };
   }, [countryDetected]);
 
-  // Clear return date if it's before pickup date
   useEffect(() => {
     if (formData.pickupDate && formData.returnDate && formData.returnDate < formData.pickupDate) {
       setFormData(prev => ({ ...prev, returnDate: '' }));
@@ -329,27 +326,21 @@ const Booking = () => {
   }, [formData.pickupDate]);
 
   const handleChange = (e) => {
-  const { name, value } = e.target;
-
-  // Validate pickup date: cannot be before today
-  if (name === 'pickupDate') {
-    if (value && value < today) {
-      setFormData(prev => ({ ...prev, pickupDate: today }));
-      return;
+    const { name, value } = e.target;
+    if (name === 'pickupDate') {
+      if (value && value < today) {
+        setFormData(prev => ({ ...prev, pickupDate: today }));
+        return;
+      }
     }
-  }
-
-  // Validate return date: cannot be before pickup date
-  if (name === 'returnDate') {
-    if (value && formData.pickupDate && value < formData.pickupDate) {
-      setFormData(prev => ({ ...prev, returnDate: '' }));
-      return;
+    if (name === 'returnDate') {
+      if (value && formData.pickupDate && value < formData.pickupDate) {
+        setFormData(prev => ({ ...prev, returnDate: '' }));
+        return;
+      }
     }
-  }
-
-  // For all other fields, update normally
-  setFormData(prev => ({ ...prev, [name]: value }));
-};
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handlePhoneNumberChange = (e) => {
     setFormData(prev => ({ ...prev, phoneNumber: e.target.value }));
@@ -362,23 +353,68 @@ const Booking = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    let token = '';
+    try {
+      token = await getRecaptchaToken('booking_form');
+    } catch (error) {
+      setSubmitStatus({ success: false, message: 'reCAPTCHA verification failed. Please refresh and try again.' });
+      setIsSubmitting(false);
+      return;
+    }
 
     const selectedCountry = countries.find(c => c.code === formData.phoneCountry) || countries[0];
     const fullPhone = `${selectedCountry.dial} ${formData.phoneNumber}`;
 
-    const submissionData = {
-      ...formData,
+    const payload = {
+      form_type: 'booking',
+      recaptcha_token: token,
+      name: formData.name,
+      email: formData.email,
       fullPhone,
+      pickupLocation: formData.pickupLocation,
+      dropoffLocation: formData.dropoffLocation,
+      pickupDate: formData.pickupDate,
+      pickupTime: formData.pickupTime,
+      returnDate: formData.returnDate,
+      returnTime: formData.returnTime,
+      passengers: formData.passengers,
+      tripType: activeTab,
+      notes: formData.notes,
+      website: '', // honeypot
     };
 
-    console.log('Submitting booking:', submissionData);
-
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setSubmitStatus({
-      success: true,
-      message: 'Your booking request has been submitted! We will contact you shortly.'
-    });
-    setIsSubmitting(false);
+    try {
+      const response = await fetch(import.meta.env.VITE_FORM_HANDLER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+      setSubmitStatus(result);
+      if (result.success) {
+        // Reset form
+        setFormData({
+          pickupLocation: '',
+          dropoffLocation: '',
+          pickupDate: '',
+          pickupTime: '',
+          returnDate: '',
+          returnTime: '',
+          passengers: '',
+          name: '',
+          email: '',
+          phoneCountry: formData.phoneCountry,
+          phoneNumber: '',
+          notes: '',
+        });
+      }
+    } catch (error) {
+      setSubmitStatus({ success: false, message: 'Network error. Please try again.' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -395,10 +431,9 @@ const Booking = () => {
                   <p>Fill in the details below to request a booking</p>
                 </div>
 
-                {apiKeyMissing && (
+                {apiKeyMissing && import.meta.env.DEV && (
                   <div className="alert alert-danger" style={{ marginBottom: '20px' }}>
-                    <strong>Configuration Error:</strong> Google Maps API key is missing. 
-                    Please add <code>VITE_GOOGLE_MAPS_API_KEY</code> to your .env file.
+                    <strong>Configuration Error:</strong> Google Maps API key is missing.
                   </div>
                 )}
 

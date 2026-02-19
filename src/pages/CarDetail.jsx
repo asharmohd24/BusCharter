@@ -190,7 +190,7 @@ const CarDetail = () => {
           <div className="cars-grid">
             {siteData.cars
               .filter(v => v.id !== vehicle.id)
-              .slice(0, 3)
+              .slice(0, 4)
               .map((bus) => (
                 <div key={bus.id} className="car-card">
                   <div className="car-image">
