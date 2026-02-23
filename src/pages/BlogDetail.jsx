@@ -1,13 +1,16 @@
 /**
- * Blog Detail Page - With actual images from data
+ * Blog Detail Page - With working search and category links
  */
 
-import { Link, useParams, Navigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useParams, Navigate, useNavigate } from 'react-router-dom';
 import { siteData, getBlogBySlug } from '../data/data';
 import PageBanner from '../components/PageBanner';
 
 const BlogDetail = () => {
   const { slug } = useParams();
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
   
   // Find the blog post by slug, or default to first post if no slug
   const post = slug ? getBlogBySlug(slug) : siteData.blogPosts[0];
@@ -21,6 +24,17 @@ const BlogDetail = () => {
   const relatedPosts = post.relatedPosts 
     ? siteData.blogPosts.filter(p => post.relatedPosts.includes(p.id))
     : siteData.blogPosts.filter(p => p.id !== post.id).slice(0, 2);
+
+  // Get unique categories with counts
+  const categories = [...new Set(siteData.blogPosts.map(p => p.category))];
+
+  // Handle sidebar search
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/blogs?search=${encodeURIComponent(searchTerm.trim())}`);
+    }
+  };
 
   return (
     <>
@@ -66,7 +80,9 @@ const BlogDetail = () => {
                   </span>
                   <span className="meta-item">
                     <FolderIcon />
-                    {post.category}
+                    <Link to={`/blogs?category=${encodeURIComponent(post.category)}`} className="meta-link">
+                      {post.category}
+                    </Link>
                   </span>
                 </div>
 
@@ -104,29 +120,10 @@ const BlogDetail = () => {
                       <TagIcon /> Tags:
                     </span>
                     {post.tags.map((tag, index) => (
-                      <Link key={index} to="/blogs" className="tag">{tag}</Link>
+                      <Link key={index} to={`/blogs?search=${encodeURIComponent(tag)}`} className="tag">{tag}</Link>
                     ))}
                   </div>
                 )}
-
-                {/* Share Buttons */}
-                {/* <div className="blog-share mt-32">
-                  <span className="share-label">Share this article:</span>
-                  <div className="share-buttons">
-                    <a href="#" className="share-btn facebook" aria-label="Share on Facebook">
-                      <i className="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="#" className="share-btn twitter" aria-label="Share on Twitter">
-                      <i className="fab fa-twitter"></i>
-                    </a>
-                    <a href="#" className="share-btn linkedin" aria-label="Share on LinkedIn">
-                      <i className="fab fa-linkedin-in"></i>
-                    </a>
-                    <a href="#" className="share-btn email" aria-label="Share via Email">
-                      <i className="fa fa-envelope"></i>
-                    </a>
-                  </div>
-                </div> */}
 
                 {/* Author Box */}
                 <div className="author-box mt-40">
@@ -147,10 +144,15 @@ const BlogDetail = () => {
                 {/* Search Widget */}
                 <div className="sidebar-widget search-widget">
                   <h5 className="widget-title">Search</h5>
-                  <div className="search-form">
-                    <input type="text" placeholder="Search articles..." />
-                    <button type="button"><i className="fa fa-search"></i></button>
-                  </div>
+                  <form className="search-form" onSubmit={handleSearch}>
+                    <input
+                      type="text"
+                      placeholder="Search articles..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <button type="submit"><i className="fa fa-search"></i></button>
+                  </form>
                 </div>
 
                 {/* Recent Posts */}
@@ -181,9 +183,9 @@ const BlogDetail = () => {
                 <div className="sidebar-widget">
                   <h5 className="widget-title">Categories</h5>
                   <ul className="categories">
-                    {[...new Set(siteData.blogPosts.map(p => p.category))].map((category, index) => (
+                    {categories.map((category, index) => (
                       <li key={index}>
-                        <Link to="/blogs">
+                        <Link to={`/blogs?category=${encodeURIComponent(category)}`}>
                           {category}
                           <span>({siteData.blogPosts.filter(p => p.category === category).length})</span>
                         </Link>

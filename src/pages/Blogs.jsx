@@ -1,12 +1,87 @@
 /**
- * Blogs Page - With actual images from data
+ * Blogs Page - With search and category filtering
  */
 
-import { Link } from 'react-router-dom';
+import { useState, useMemo } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { siteData } from '../data/data';
 import PageBanner from '../components/PageBanner';
 
 const Blogs = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+  
+  // Get active category from URL params
+  const activeCategory = searchParams.get('category') || 'All';
+
+  // Get unique categories
+  const categories = useMemo(() => {
+    const cats = [...new Set(siteData.blogPosts.map(p => p.category))];
+    return ['All', ...cats];
+  }, []);
+
+  // Filter posts by category and search
+  const filteredPosts = useMemo(() => {
+    let posts = siteData.blogPosts;
+
+    // Filter by category
+    if (activeCategory && activeCategory !== 'All') {
+      posts = posts.filter(p => p.category === activeCategory);
+    }
+
+    // Filter by search term
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase().trim();
+      posts = posts.filter(p =>
+        p.title.toLowerCase().includes(term) ||
+        p.excerpt.toLowerCase().includes(term) ||
+        p.category.toLowerCase().includes(term) ||
+        (p.tags && p.tags.some(tag => tag.toLowerCase().includes(term)))
+      );
+    }
+
+    return posts;
+  }, [activeCategory, searchTerm]);
+
+  // Handle category click
+  const handleCategoryClick = (category) => {
+    const params = new URLSearchParams(searchParams);
+    if (category === 'All') {
+      params.delete('category');
+    } else {
+      params.set('category', category);
+    }
+    setSearchParams(params);
+  };
+
+  // Handle search
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const params = new URLSearchParams(searchParams);
+    if (searchTerm.trim()) {
+      params.set('search', searchTerm.trim());
+    } else {
+      params.delete('search');
+    }
+    setSearchParams(params);
+  };
+
+  // Handle clearing search
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    const params = new URLSearchParams(searchParams);
+    params.delete('search');
+    setSearchParams(params);
+  };
+
+  // Handle clearing all filters
+  const handleClearAll = () => {
+    setSearchTerm('');
+    setSearchParams({});
+  };
+
+  const hasActiveFilters = activeCategory !== 'All' || searchParams.get('search');
+
   return (
     <>
       <PageBanner title="Global Bus Charter Blog" />
@@ -20,53 +95,121 @@ const Blogs = () => {
               Stay informed with our latest articles on group travel, bus charter tips, and industry insights.
             </p>
           </div>
-          <div className="blogs-grid">
-            {siteData.blogPosts.map((post) => (
-              <article key={post.id} className="blog-card">
-                <div className="blog-image">
-                  {post.image ? (
-                    <img src={post.image} alt={post.title} loading="lazy" />
-                  ) : (
-                    <div className="placeholder-img blog-image-placeholder">
-                      <span>{post.category}</span>
-                    </div>
+
+          {/* Search & Filter Bar */}
+          <div className="blog-filters mb-40">
+            {/* Search */}
+            <form className="blog-search-form" onSubmit={handleSearch}>
+              <div className="search-input-wrapper">
+                <SearchIcon />
+                <input
+                  type="text"
+                  placeholder="Search articles..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                {searchTerm && (
+                  <button type="button" className="search-clear-btn" onClick={handleClearSearch} aria-label="Clear search">
+                    <CloseIcon />
+                  </button>
+                )}
+              </div>
+              <button type="submit" className="cus-btn search-submit-btn">Search</button>
+            </form>
+
+            {/* Category Pills */}
+            {/* <div className="blog-categories-filter">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  className={`category-pill ${activeCategory === category ? 'active' : ''}`}
+                  onClick={() => handleCategoryClick(category)}
+                >
+                  {category}
+                  {category !== 'All' && (
+                    <span className="category-count">
+                      {siteData.blogPosts.filter(p => p.category === category).length}
+                    </span>
                   )}
-                  <span className="blog-category">{post.category}</span>
-                </div>
-                <div className="blog-content">
-                  <div className="blog-meta">
-                    <span><CalendarIcon /> {new Date(post.date).toLocaleDateString()}</span>
-                    <span><UserIcon /> {post.author}</span>
-                  </div>
-                  <h5 className="blog-title">
-                    <Link to={`/blog/${post.slug}`}>{post.title}</Link>
-                  </h5>
-                  <p className="blog-excerpt">{post.excerpt}</p>
-                  <Link to={`/blog/${post.slug}`} className="read-more">
-                    Read More <ArrowIcon />
-                  </Link>
-                </div>
-              </article>
-            ))}
+                </button>
+              ))}
+            </div> */}
+
+            {/* Active Filters Summary */}
+            {hasActiveFilters && (
+              <div className="active-filters">
+                <span className="active-filters-label">Showing:</span>
+                {activeCategory !== 'All' && (
+                  <span className="filter-tag">
+                    {activeCategory}
+                    <button onClick={() => handleCategoryClick('All')} aria-label="Remove category filter">
+                      <CloseIcon />
+                    </button>
+                  </span>
+                )}
+                {searchParams.get('search') && (
+                  <span className="filter-tag">
+                    "{searchParams.get('search')}"
+                    <button onClick={handleClearSearch} aria-label="Remove search filter">
+                      <CloseIcon />
+                    </button>
+                  </span>
+                )}
+                <button className="clear-all-btn" onClick={handleClearAll}>Clear All</button>
+              </div>
+            )}
           </div>
+
+          {/* Results Count */}
+          {hasActiveFilters && (
+            <p className="results-count mb-24">
+              {filteredPosts.length} {filteredPosts.length === 1 ? 'article' : 'articles'} found
+            </p>
+          )}
+
+          {/* Blog Grid */}
+          {filteredPosts.length > 0 ? (
+            <div className="blogs-grid">
+              {filteredPosts.map((post) => (
+                <article key={post.id} className="blog-card">
+                  <div className="blog-image">
+                    {post.image ? (
+                      <img src={post.image} alt={post.title} loading="lazy" />
+                    ) : (
+                      <div className="placeholder-img blog-image-placeholder">
+                        <span>{post.category}</span>
+                      </div>
+                    )}
+                    <span className="blog-category">{post.category}</span>
+                  </div>
+                  <div className="blog-content">
+                    <div className="blog-meta">
+                      <span><CalendarIcon /> {new Date(post.date).toLocaleDateString()}</span>
+                      <span><UserIcon /> {post.author}</span>
+                    </div>
+                    <h5 className="blog-title">
+                      <Link to={`/blog/${post.slug}`}>{post.title}</Link>
+                    </h5>
+                    <p className="blog-excerpt">{post.excerpt}</p>
+                    <Link to={`/blog/${post.slug}`} className="read-more">
+                      Read More <ArrowIcon />
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="no-results text-center">
+              <div className="no-results-icon">
+                <SearchIcon />
+              </div>
+              <h4>No articles found</h4>
+              <p>Try adjusting your search or filter to find what you're looking for.</p>
+              <button className="cus-btn mt-16" onClick={handleClearAll}>View All Articles</button>
+            </div>
+          )}
         </div>
       </section>
-
-      {/* Newsletter Section */}
-      {/* <section className="newsletter-section pt-60 pb-60 bg-light">
-        <div className="container-fluid">
-          <div className="newsletter-box">
-            <div className="newsletter-content">
-              <h3>Subscribe to Our Newsletter</h3>
-              <p>Get the latest travel tips, special offers, and news delivered to your inbox.</p>
-            </div>
-            <div className="newsletter-form">
-              <input type="email" placeholder="Enter your email address" />
-              <button type="button" className="cus-btn">Subscribe</button>
-            </div>
-          </div>
-        </div>
-      </section> */}
     </>
   );
 };
@@ -87,6 +230,18 @@ const UserIcon = () => (
 const ArrowIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
     <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+  </svg>
+);
+
+const SearchIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
+    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14">
+    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
   </svg>
 );
 
