@@ -14,17 +14,12 @@ export const siteData = {
 
   // Contact Information
   contact: {
-    phone: "+1 (555) 789-1234",
-    phoneFormatted: "+15557891234",
+    phone: "+44 208 4326 423",
+    phoneFormatted: "+442084326423",
     email: "hello@globalbuscharter.com",
     supportEmail: "support@globalbuscharter.com",
     address: {
-      street: "123 Main Street",
-      city: "Houston",
-      state: "TX",
-      zip: "77001",
-      country: "USA",
-      full: "123 Main Street, Houston, TX 77001, USA",
+      full: "71-75 Shelton Street, Covent Garden, London, United Kingdom, WC2H 9JQ",
     },
     workingHours: {
       weekdays: "Mon - Fri: 8:00 AM - 6:00 PM",
@@ -34,18 +29,10 @@ export const siteData = {
 
   // Google Maps
   maps: {
-    embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d443088.05176831636!2d-95.73093531411777!3d29.81736469329602!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8640b8b4488d8501%3A0xca0d02def365053b!2sHouston%2C%20TX%2C%20USA!5e0!3m2!1sen!2s!4v1716960714220!5m2!1sen!2s",
+    embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2482.9160537426387!2d-0.12614482337948946!3d51.514756071814894!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4876058c7c9527fb%3A0x79bc7464573598c1!2s71-75%20Shelton%20St%2C%20London%20WC2H%209JQ%2C%20UK!5e0!3m2!1sen!2sae!4v1771929033057!5m2!1sen!2sae",
   },
 
-  // Social Media Links
-  social: {
-    dribbble: "https://dribbble.com/globalbus",
-    instagram: "https://instagram.com/globalbuscharter",
-    facebook: "https://facebook.com/globalbuscharter",
-    linkedin: "https://linkedin.com/company/globalbuscharter",
-    twitter: "https://twitter.com/globalbus",
-  },
-
+  
   // Navigation Menu
   navigation: [
     { name: "Home", path: "/", active: true },
