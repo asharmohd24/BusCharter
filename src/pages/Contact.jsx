@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { siteData } from '../data/data';
+import { useSEO } from '../hooks/useSEO';
 import PageBanner from '../components/PageBanner';
 import useForm from '../hooks/useForm';
 import { getRecaptchaToken } from '../utils/recaptcha';
@@ -372,6 +373,11 @@ const CountryCodeSelect = ({ value, onChange }) => {
 };
 
 const Contact = () => {
+  useSEO({
+    title: 'Contact Us',
+    description: `Get in touch with Global Bus Charter. Call us at ${siteData.contact.phone} or email ${siteData.contact.email} to book your group transportation today.`,
+    keywords: 'contact global bus charter, bus rental inquiry, book charter bus, group transport quote',
+  });
   const [phoneCountry, setPhoneCountry] = useState('US');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);

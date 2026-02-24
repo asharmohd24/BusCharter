@@ -5,9 +5,15 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { siteData } from '../data/data';
+import { useSEO } from '../hooks/useSEO';
 import PageBanner from '../components/PageBanner';
 
 const Blogs = () => {
+  useSEO({
+    title: 'Blog & Travel Tips',
+    description: 'Read the latest articles, travel tips, and guides from Global Bus Charter – your resource for group transportation advice.',
+    keywords: 'charter bus blog, group travel tips, bus rental guides, transportation articles',
+  });
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   

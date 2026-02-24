@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useSEO } from '../hooks/useSEO';
 import PageBanner from '../components/PageBanner';
 import { getRecaptchaToken } from '../utils/recaptcha';
 
@@ -373,6 +374,11 @@ const CountryCodeSelect = ({ value, onChange }) => {
 };
 
 const Booking = () => {
+  useSEO({
+    title: 'Book a Charter Bus',
+    description: 'Request a charter bus booking online. Fill in your trip details and our team will confirm your group transportation quickly.',
+    keywords: 'book charter bus, bus rental booking, group transport reservation, hire a bus online',
+  });
   const [activeTab, setActiveTab] = useState('one-way');
   const [formData, setFormData] = useState({
     pickupLocation: '',

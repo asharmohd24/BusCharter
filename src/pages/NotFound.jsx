@@ -4,8 +4,13 @@
  */
 
 import { Link } from 'react-router-dom';
+import { useSEO } from '../hooks/useSEO';
 
 const NotFound = () => {
+  useSEO({
+    title: '404 – Page Not Found',
+    description: 'The page you are looking for could not be found. Return to the Global Bus Charter homepage.',
+  });
   return (
     <section className="not-found-section pt-80 pb-80">
       <div className="container-fluid">

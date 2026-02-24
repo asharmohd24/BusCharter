@@ -5,6 +5,7 @@
 import { useState } from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { siteData, getServiceBySlug } from '../data/data';
+import { useSEO } from '../hooks/useSEO';
 import PageBanner from '../components/PageBanner';
 
 const ServiceDetail = () => {
@@ -18,6 +19,14 @@ const ServiceDetail = () => {
   if (!service) {
     return <Navigate to="/services" replace />;
   }
+
+  useSEO({
+    title: service.title,
+    description: service.description,
+    image: service.image,
+    keywords: `${service.title.toLowerCase()}, charter bus service, group transportation, ${siteData.seo.keywords}`,
+    type: 'article',
+  });
 
   return (
     <>

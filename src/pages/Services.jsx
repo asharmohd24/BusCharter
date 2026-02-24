@@ -4,9 +4,15 @@
 
 import { Link } from 'react-router-dom';
 import { siteData } from '../data/data';
+import { useSEO } from '../hooks/useSEO';
 import PageBanner from '../components/PageBanner';
 
 const Services = () => {
+  useSEO({
+    title: 'Our Services',
+    description: 'Explore our full range of charter bus services – corporate transport, airport transfers, weddings, school trips, city tours, concerts, and more.',
+    keywords: 'charter bus services, corporate transport, airport transfer, wedding bus, school trip bus, city tour bus',
+  });
   return (
     <>
       <PageBanner title="Our Services" />

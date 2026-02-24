@@ -5,6 +5,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams, Navigate, useNavigate } from 'react-router-dom';
 import { siteData, getBlogBySlug } from '../data/data';
+import { useSEO } from '../hooks/useSEO';
 import PageBanner from '../components/PageBanner';
 
 const BlogDetail = () => {
@@ -14,47 +15,25 @@ const BlogDetail = () => {
   
   // Find the blog post by slug, or default to first post if no slug
   const post = slug ? getBlogBySlug(slug) : siteData.blogPosts[0];
-  
-  // Dynamic SEO title & meta for each blog post
+
+  // If post not found, redirect to blog listing
+  if (!post) {
+    return <Navigate to="/blogs" replace />;
+  }
+
+  // Dynamic SEO via shared hook
+  useSEO({
+    title: post.title,
+    description: post.excerpt,
+    image: post.image,
+    keywords: post.tags ? post.tags.join(', ') : siteData.seo.keywords,
+    type: 'article',
+  });
+
+  // Article structured data (JSON-LD) — bonus SEO for blog posts
   useEffect(() => {
     if (!post) return;
 
-    const pageTitle = `${post.title} | ${siteData.siteName}`;
-    document.title = pageTitle;
-
-    // Meta description — use excerpt
-    updateMeta('description', post.excerpt);
-
-    // Open Graph tags
-    updateMeta('og:title', pageTitle);
-    updateMeta('og:description', post.excerpt);
-    updateMeta('og:type', 'article');
-    if (post.image) {
-      updateMeta('og:image', post.image);
-    }
-
-    // Article-specific OG tags
-    updateMeta('article:published_time', post.date);
-    updateMeta('article:author', post.author);
-    updateMeta('article:section', post.category);
-    if (post.tags) {
-      updateMeta('article:tag', post.tags.join(', '));
-    }
-
-    // Twitter card
-    updateMeta('twitter:card', 'summary_large_image');
-    updateMeta('twitter:title', pageTitle);
-    updateMeta('twitter:description', post.excerpt);
-    if (post.image) {
-      updateMeta('twitter:image', post.image);
-    }
-
-    // Keywords from tags
-    if (post.tags) {
-      updateMeta('keywords', post.tags.join(', '));
-    }
-
-    // JSON-LD Structured Data for BlogPosting
     const structuredData = {
       '@context': 'https://schema.org',
       '@type': 'BlogPosting',
@@ -87,18 +66,11 @@ const BlogDetail = () => {
     }
     scriptEl.textContent = JSON.stringify(structuredData);
 
-    // Cleanup on unmount
     return () => {
-      document.title = siteData.seo.defaultTitle;
       const ldScript = document.querySelector('#blog-structured-data');
       if (ldScript) ldScript.remove();
     };
   }, [post]);
-
-  // If post not found, redirect to blog listing
-  if (!post) {
-    return <Navigate to="/blogs" replace />;
-  }
 
   // Get related posts
   const relatedPosts = post.relatedPosts 

@@ -6,10 +6,16 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { siteData } from '../data/data';
+import { useSEO } from '../hooks/useSEO';
 import ctaImage from '/assets/images/cta.png';
 import faqImage from '/assets/images/faq.png';
 import aboutImage from '/assets/images/abtus.png'
 const Home = () => {
+  useSEO({
+    title: 'Premium Group Transportation & Bus Rentals',
+    description: siteData.siteDescription,
+    keywords: siteData.seo.keywords,
+  });
   const [activeTab, setActiveTab] = useState('transfers');
   const [activeFaq, setActiveFaq] = useState(1);
 

@@ -7,9 +7,15 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { siteData } from '../data/data';
+import { useSEO } from '../hooks/useSEO';
 import PageBanner from '../components/PageBanner';
 
 const About = () => {
+  useSEO({
+    title: 'About Us',
+    description: 'Learn about Global Bus Charter – our story, mission, and the team dedicated to providing premium group transportation services across the region.',
+    keywords: 'about global bus charter, charter bus company, group transportation company, bus rental team',
+  });
   return (
     <>
       <PageBanner title="About Us" />

@@ -5,9 +5,15 @@
 import { useState, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { siteData } from '../data/data';
+import { useSEO } from '../hooks/useSEO';
 import PageBanner from '../components/PageBanner';
 
 const OurCars = () => {
+  useSEO({
+    title: 'Our Fleet',
+    description: 'Browse our modern fleet of charter buses, coaches, mini-buses, and luxury vehicles available for group hire.',
+    keywords: 'charter bus fleet, coach hire, mini bus rental, luxury bus, party bus, vehicle fleet',
+  });
   // Filter states
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [capacityFilter, setCapacityFilter] = useState('all');

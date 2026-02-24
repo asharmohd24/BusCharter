@@ -6,6 +6,7 @@
 
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { siteData, getVehicleBySlug } from '../data/data';
+import { useSEO } from '../hooks/useSEO';
 import PageBanner from '../components/PageBanner';
 
 const CarDetail = () => {
@@ -18,6 +19,14 @@ const CarDetail = () => {
   if (!vehicle) {
     return <Navigate to="/our-fleet" replace />;
   }
+
+  useSEO({
+    title: vehicle.name,
+    description: vehicle.description || `Hire the ${vehicle.name} for your group travel. ${vehicle.capacity ? `Seats up to ${vehicle.capacity} passengers.` : ''} Book with Global Bus Charter today.`,
+    image: vehicle.image,
+    keywords: `${vehicle.name}, charter bus hire, ${vehicle.category || 'bus'} rental, group vehicle, ${siteData.seo.keywords}`,
+    type: 'article',
+  });
 
   return (
     <>
