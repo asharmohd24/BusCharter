@@ -133,7 +133,7 @@ const Blogs = () => {
               <button type="submit" className="cus-btn search-submit-btn">Search</button>
             </form>
 
-            <div className="blog-categories-filter">
+            {/* <div className="blog-categories-filter">
               {categories.map((category) => (
                 <button
                   key={category}
@@ -148,7 +148,7 @@ const Blogs = () => {
                   )}
                 </button>
               ))}
-            </div>
+            </div> */}
 
             {hasActiveFilters && (
               <div className="active-filters">
