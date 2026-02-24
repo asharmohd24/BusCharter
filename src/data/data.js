@@ -3,7 +3,7 @@ export const siteData = {
   siteName: "Global Bus Charter",
   siteTitle: "Global Bus Charter | Premium Group Transportation & Bus Rentals",
   siteDescription: "Reliable charter bus services for corporate events, weddings, and group travel. Explore our modern fleet of mini-buses, coaches, and party buses. Get a quote today.",
-  logo: "/assets/images/logo1.png",
+  logo: "/assets/images/logo2.png",
 
   // SEO
   seo: {

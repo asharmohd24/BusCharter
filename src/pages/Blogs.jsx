@@ -1,8 +1,8 @@
 /**
- * Blogs Page - With search and category filtering
+ * Blogs Page - With search, category filtering, and dynamic SEO
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { siteData } from '../data/data';
 import PageBanner from '../components/PageBanner';
@@ -14,6 +14,29 @@ const Blogs = () => {
   // Get active category from URL params
   const activeCategory = searchParams.get('category') || 'All';
 
+  // Dynamic SEO title & meta
+  useEffect(() => {
+    const titleParts = ['Blog'];
+    if (activeCategory !== 'All') titleParts.push(activeCategory);
+    if (searchParams.get('search')) titleParts.push(`Search: "${searchParams.get('search')}"`);
+    
+    const pageTitle = titleParts.join(' - ') + ` | ${siteData.siteName}`;
+    document.title = pageTitle;
+
+    const metaDesc = activeCategory !== 'All'
+      ? `Browse our ${activeCategory} articles. ${siteData.siteDescription}`
+      : `Stay informed with the latest news, travel tips, and insights from ${siteData.siteName}.`;
+    
+    updateMeta('description', metaDesc);
+    updateMeta('og:title', pageTitle);
+    updateMeta('og:description', metaDesc);
+    updateMeta('og:type', 'website');
+
+    return () => {
+      document.title = siteData.seo.defaultTitle;
+    };
+  }, [activeCategory, searchParams]);
+
   // Get unique categories
   const categories = useMemo(() => {
     const cats = [...new Set(siteData.blogPosts.map(p => p.category))];
@@ -24,12 +47,10 @@ const Blogs = () => {
   const filteredPosts = useMemo(() => {
     let posts = siteData.blogPosts;
 
-    // Filter by category
     if (activeCategory && activeCategory !== 'All') {
       posts = posts.filter(p => p.category === activeCategory);
     }
 
-    // Filter by search term
     if (searchTerm.trim()) {
       const term = searchTerm.toLowerCase().trim();
       posts = posts.filter(p =>
@@ -43,7 +64,6 @@ const Blogs = () => {
     return posts;
   }, [activeCategory, searchTerm]);
 
-  // Handle category click
   const handleCategoryClick = (category) => {
     const params = new URLSearchParams(searchParams);
     if (category === 'All') {
@@ -54,7 +74,6 @@ const Blogs = () => {
     setSearchParams(params);
   };
 
-  // Handle search
   const handleSearch = (e) => {
     e.preventDefault();
     const params = new URLSearchParams(searchParams);
@@ -66,7 +85,6 @@ const Blogs = () => {
     setSearchParams(params);
   };
 
-  // Handle clearing search
   const handleClearSearch = () => {
     setSearchTerm('');
     const params = new URLSearchParams(searchParams);
@@ -74,7 +92,6 @@ const Blogs = () => {
     setSearchParams(params);
   };
 
-  // Handle clearing all filters
   const handleClearAll = () => {
     setSearchTerm('');
     setSearchParams({});
@@ -98,7 +115,6 @@ const Blogs = () => {
 
           {/* Search & Filter Bar */}
           <div className="blog-filters mb-40">
-            {/* Search */}
             <form className="blog-search-form" onSubmit={handleSearch}>
               <div className="search-input-wrapper">
                 <SearchIcon />
@@ -117,8 +133,7 @@ const Blogs = () => {
               <button type="submit" className="cus-btn search-submit-btn">Search</button>
             </form>
 
-            {/* Category Pills */}
-            {/* <div className="blog-categories-filter">
+            <div className="blog-categories-filter">
               {categories.map((category) => (
                 <button
                   key={category}
@@ -133,9 +148,8 @@ const Blogs = () => {
                   )}
                 </button>
               ))}
-            </div> */}
+            </div>
 
-            {/* Active Filters Summary */}
             {hasActiveFilters && (
               <div className="active-filters">
                 <span className="active-filters-label">Showing:</span>
@@ -160,14 +174,12 @@ const Blogs = () => {
             )}
           </div>
 
-          {/* Results Count */}
           {hasActiveFilters && (
             <p className="results-count mb-24">
               {filteredPosts.length} {filteredPosts.length === 1 ? 'article' : 'articles'} found
             </p>
           )}
 
-          {/* Blog Grid */}
           {filteredPosts.length > 0 ? (
             <div className="blogs-grid">
               {filteredPosts.map((post) => (
@@ -213,6 +225,25 @@ const Blogs = () => {
     </>
   );
 };
+
+// Helper to update or create meta tags
+function updateMeta(name, content) {
+  const isOg = name.startsWith('og:');
+  const selector = isOg
+    ? `meta[property="${name}"]`
+    : `meta[name="${name}"]`;
+  let el = document.querySelector(selector);
+  if (!el) {
+    el = document.createElement('meta');
+    if (isOg) {
+      el.setAttribute('property', name);
+    } else {
+      el.setAttribute('name', name);
+    }
+    document.head.appendChild(el);
+  }
+  el.setAttribute('content', content);
+}
 
 // Icon Components
 const CalendarIcon = () => (

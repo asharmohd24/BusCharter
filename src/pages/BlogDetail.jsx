@@ -1,8 +1,8 @@
 /**
- * Blog Detail Page - With working search and category links
+ * Blog Detail Page - With working search, category links, and dynamic SEO
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useParams, Navigate, useNavigate } from 'react-router-dom';
 import { siteData, getBlogBySlug } from '../data/data';
 import PageBanner from '../components/PageBanner';
@@ -15,6 +15,86 @@ const BlogDetail = () => {
   // Find the blog post by slug, or default to first post if no slug
   const post = slug ? getBlogBySlug(slug) : siteData.blogPosts[0];
   
+  // Dynamic SEO title & meta for each blog post
+  useEffect(() => {
+    if (!post) return;
+
+    const pageTitle = `${post.title} | ${siteData.siteName}`;
+    document.title = pageTitle;
+
+    // Meta description — use excerpt
+    updateMeta('description', post.excerpt);
+
+    // Open Graph tags
+    updateMeta('og:title', pageTitle);
+    updateMeta('og:description', post.excerpt);
+    updateMeta('og:type', 'article');
+    if (post.image) {
+      updateMeta('og:image', post.image);
+    }
+
+    // Article-specific OG tags
+    updateMeta('article:published_time', post.date);
+    updateMeta('article:author', post.author);
+    updateMeta('article:section', post.category);
+    if (post.tags) {
+      updateMeta('article:tag', post.tags.join(', '));
+    }
+
+    // Twitter card
+    updateMeta('twitter:card', 'summary_large_image');
+    updateMeta('twitter:title', pageTitle);
+    updateMeta('twitter:description', post.excerpt);
+    if (post.image) {
+      updateMeta('twitter:image', post.image);
+    }
+
+    // Keywords from tags
+    if (post.tags) {
+      updateMeta('keywords', post.tags.join(', '));
+    }
+
+    // JSON-LD Structured Data for BlogPosting
+    const structuredData = {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: post.title,
+      description: post.excerpt,
+      image: post.image || '',
+      datePublished: post.date,
+      author: {
+        '@type': 'Person',
+        name: post.author,
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: siteData.siteName,
+        logo: {
+          '@type': 'ImageObject',
+          url: siteData.logo,
+        },
+      },
+      articleSection: post.category,
+      keywords: post.tags ? post.tags.join(', ') : '',
+    };
+
+    let scriptEl = document.querySelector('#blog-structured-data');
+    if (!scriptEl) {
+      scriptEl = document.createElement('script');
+      scriptEl.id = 'blog-structured-data';
+      scriptEl.type = 'application/ld+json';
+      document.head.appendChild(scriptEl);
+    }
+    scriptEl.textContent = JSON.stringify(structuredData);
+
+    // Cleanup on unmount
+    return () => {
+      document.title = siteData.seo.defaultTitle;
+      const ldScript = document.querySelector('#blog-structured-data');
+      if (ldScript) ldScript.remove();
+    };
+  }, [post]);
+
   // If post not found, redirect to blog listing
   if (!post) {
     return <Navigate to="/blogs" replace />;
@@ -25,7 +105,7 @@ const BlogDetail = () => {
     ? siteData.blogPosts.filter(p => post.relatedPosts.includes(p.id))
     : siteData.blogPosts.filter(p => p.id !== post.id).slice(0, 2);
 
-  // Get unique categories with counts
+  // Get unique categories
   const categories = [...new Set(siteData.blogPosts.map(p => p.category))];
 
   // Handle sidebar search
@@ -249,6 +329,26 @@ const BlogDetail = () => {
     </>
   );
 };
+
+// Helper to update or create meta tags
+function updateMeta(name, content) {
+  const isOg = name.startsWith('og:') || name.startsWith('article:');
+  const isTwitter = name.startsWith('twitter:');
+  const selector = (isOg || isTwitter)
+    ? `meta[property="${name}"], meta[name="${name}"]`
+    : `meta[name="${name}"]`;
+  let el = document.querySelector(selector);
+  if (!el) {
+    el = document.createElement('meta');
+    if (isOg) {
+      el.setAttribute('property', name);
+    } else {
+      el.setAttribute('name', name);
+    }
+    document.head.appendChild(el);
+  }
+  el.setAttribute('content', content);
+}
 
 // Icon Components
 const CalendarIcon = () => (
