@@ -37,7 +37,7 @@ const PageLoader = () => (
 
 function App() {
   // Get reCAPTCHA site key from environment variables
-  const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'; // Test key for development
+  const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY; // Test key for development
 
   return (
     <GoogleReCaptchaProvider

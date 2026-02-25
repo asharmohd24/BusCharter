@@ -401,7 +401,7 @@ const Contact = () => {
     errors,
     handleChange,
     handleHoneypotChange,
-    resetForm,
+    reset,
   } = useForm(initialValues, validationRules);
 
   // Detect user's country
@@ -486,7 +486,7 @@ const Contact = () => {
       const result = await response.json();
       setSubmitStatus(result);
       if (result.success) {
-        resetForm();
+        reset();
         setPhoneNumber('');
       }
     } catch (error) {

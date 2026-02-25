@@ -5,8 +5,8 @@
  */
 
 // Load .env file (if exists)
-if (file_exists(__DIR__ . '/.env')) {
-    $lines = file(__DIR__ . '/.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+if (file_exists(__DIR__ . '/../.env.backend')) {
+    $lines = file(__DIR__ . '/../.env.backend', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
         if (strpos(trim($line), '#') === 0) continue;
         list($name, $value) = explode('=', $line, 2);
@@ -21,17 +21,15 @@ $config = [
     'db_user'     => getenv('DB_USER'),
     'db_pass'     => getenv('DB_PASS'),
     'recaptcha'   => getenv('RECAPTCHA_SECRET'),
-    'default_email' => getenv('DEFAULT_EMAIL') ?: 'info@busesglobal.com',
+    'default_email' => getenv('DEFAULT_EMAIL') ?: 'info@globalbuscharters.com',
     'rate_limit_max' => (int)(getenv('RATE_LIMIT_MAX') ?: 5),
     'rate_limit_window' => (int)(getenv('RATE_LIMIT_WINDOW') ?: 600),
 ];
 
 // Per‑site email routing – Add your 25 websites here
 $site_emails = [
-    'dubaibushire.com'      => 'info@dubaibushire.com',
-    'londoncoachrent.com'   => 'bookings@londoncoachrent.com',
-    'nycbuscharter.com'     => 'info@nycbuscharter.com',
-    'pariscoach.fr'         => 'contact@pariscoach.fr',
+    'www.globalbuscharters.com'      => 'info@globalbuscharters.com',
+    
     // Add all your other domains...
 ];
 

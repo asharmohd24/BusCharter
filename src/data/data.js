@@ -16,8 +16,7 @@ export const siteData = {
   contact: {
     phone: "+44 208 4326 423",
     phoneFormatted: "+442084326423",
-    email: "hello@globalbuscharter.com",
-    supportEmail: "support@globalbuscharter.com",
+    email: "info@globalbuscharters.com",
     address: {
       full: "71-75 Shelton Street, Covent Garden, London, United Kingdom, WC2H 9JQ",
     },

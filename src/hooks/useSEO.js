@@ -10,7 +10,7 @@ import { siteData } from '../data/data';
 
 const SITE_NAME = siteData.siteName;
 const DEFAULT_IMAGE = '/assets/images/og-image.jpg';
-const SITE_URL = typeof window !== 'undefined' ? window.location.origin : 'https://globalbuscharter.com';
+const SITE_URL = typeof window !== 'undefined' ? window.location.origin : 'https://www.globalbuscharters.com';
 
 /**
  * Updates or creates a <meta> tag by name or property.
