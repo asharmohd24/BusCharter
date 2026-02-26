@@ -9,10 +9,12 @@ import { useSEO } from '../hooks/useSEO';
 import PageBanner from '../components/PageBanner';
 
 const Blogs = () => {
+  const { seo, bannerTitle, tag, title, subtitle, searchPlaceholder, noResultsTitle, noResultsText, noResultsBtnText } = siteData.pages.blogs;
+
   useSEO({
-    title: 'Blog & Travel Tips',
-    description: 'Read the latest articles, travel tips, and guides from Global Bus Charter – your resource for group transportation advice.',
-    keywords: 'charter bus blog, group travel tips, bus rental guides, transportation articles',
+    title: seo.title,
+    description: seo.description,
+    keywords: seo.keywords,
   });
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
@@ -107,16 +109,14 @@ const Blogs = () => {
 
   return (
     <>
-      <PageBanner title="Global Bus Charter Blog" />
+      <PageBanner title={bannerTitle} />
 
       <section className="blogs-section pt-60 pb-60">
         <div className="container-fluid">
           <div className="text-center mb-40">
-            <span className="section-tag">Our Blog</span>
-            <h2 className="section-title">Latest News & Travel Tips</h2>
-            <p className="section-subtitle">
-              Stay informed with our latest articles on group travel, bus charter tips, and industry insights.
-            </p>
+            <span className="section-tag">{tag}</span>
+            <h2 className="section-title">{title}</h2>
+            <p className="section-subtitle">{subtitle}</p>
           </div>
 
           {/* Search & Filter Bar */}
@@ -126,7 +126,7 @@ const Blogs = () => {
                 <SearchIcon />
                 <input
                   type="text"
-                  placeholder="Search articles..."
+                  placeholder={searchPlaceholder}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -221,9 +221,9 @@ const Blogs = () => {
               <div className="no-results-icon">
                 <SearchIcon />
               </div>
-              <h4>No articles found</h4>
-              <p>Try adjusting your search or filter to find what you're looking for.</p>
-              <button className="cus-btn mt-16" onClick={handleClearAll}>View All Articles</button>
+              <h4>{noResultsTitle}</h4>
+              <p>{noResultsText}</p>
+              <button className="cus-btn mt-16" onClick={handleClearAll}>{noResultsBtnText}</button>
             </div>
           )}
         </div>

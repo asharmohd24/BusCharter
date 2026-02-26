@@ -11,10 +11,13 @@ import { useSEO } from '../hooks/useSEO';
 import PageBanner from '../components/PageBanner';
 
 const About = () => {
+  const { seo, whoWeAreTag, aboutImage, aboutImageAlt, extraDescription, contactBtnText, contactBtnLink,
+    howItWorksTag, howItWorksTitle, faqTag, faqTitle, ctaTitle, ctaText, ctaBtnText, ctaBtnLink } = siteData.pages.about;
+
   useSEO({
-    title: 'About Us',
-    description: 'Learn about Global Bus Charter – our story, mission, and the team dedicated to providing premium group transportation services across the region.',
-    keywords: 'about global bus charter, charter bus company, group transportation company, bus rental team',
+    title: seo.title,
+    description: seo.description,
+    keywords: seo.keywords,
   });
   return (
     <>
@@ -26,12 +29,12 @@ const About = () => {
           <div className="row align-items-center">
             <div className="col-lg-6">
               <div className="about-image wow fadeInLeft">
-                <img src="/assets/images/abtus1.png" alt="About Us" />
+                <img src={aboutImage} alt={aboutImageAlt} />
               </div>
             </div>
             <div className="col-lg-6">
               <div className="about-content">
-                <span className="section-tag wow fadeInUp">Who We Are</span>
+                <span className="section-tag wow fadeInUp">{whoWeAreTag}</span>
                 <h2 className="section-title wow fadeInUp" data-wow-delay="0.2s">
                   {siteData.about.subtitle}
                 </h2>
@@ -39,10 +42,10 @@ const About = () => {
                   {siteData.about.description}
                 </p>
                 <p className="about-text wow fadeInUp" data-wow-delay="0.4s">
-                  We pride ourselves on delivering exceptional customer service and maintaining a fleet of well-maintained, reliable vehicles. Whether you need a car for business, pleasure, or everyday use, we have the perfect solution for you.
+                  {extraDescription}
                 </p>
-                <Link to="/contact" className="cus-btn wow fadeInUp" data-wow-delay="0.5s">
-                  Contact Us
+                <Link to={contactBtnLink} className="cus-btn wow fadeInUp" data-wow-delay="0.5s">
+                  {contactBtnText}
                 </Link>
               </div>
             </div>
@@ -71,9 +74,9 @@ const About = () => {
         <div className="container-fluid">
           <div className="row">
             <div className="col-12 text-center mb-48">
-              <span className="section-tag wow fadeInUp">How It Works</span>
+              <span className="section-tag wow fadeInUp">{howItWorksTag}</span>
               <h2 className="section-title wow fadeInUp" data-wow-delay="0.2s">
-                Our Simple Process
+                {howItWorksTitle}
               </h2>
             </div>
           </div>
@@ -95,43 +98,14 @@ const About = () => {
         </div>
       </section>
 
-      {/* Team Section */}
-      {/* <section className="team-section pt-80 pb-80 bg-light">
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-12 text-center mb-48">
-              <span className="section-tag wow fadeInUp">Our Team</span>
-              <h2 className="section-title wow fadeInUp" data-wow-delay="0.2s">
-                Meet The Experts
-              </h2>
-            </div>
-          </div>
-          <div className="row justify-content-center">
-            {siteData.about.team.map((member, index) => (
-              <div key={member.id} className="col-lg-4 col-md-6">
-                <div className="team-card wow fadeInUp" data-wow-delay={`${index * 0.2}s`}>
-                  <div className="team-image">
-                    <img src={member.image} alt={member.name} />
-                  </div>
-                  <div className="team-info">
-                    <h5 className="name">{member.name}</h5>
-                    <span className="role">{member.role}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section> */}
-
       {/* FAQ Section */}
       <section className="faq-section pt-80 pb-80">
         <div className="container-fluid">
           <div className="row">
             <div className="col-12 text-center mb-48">
-              <span className="section-tag wow fadeInUp">FAQ</span>
+              <span className="section-tag wow fadeInUp">{faqTag}</span>
               <h2 className="section-title wow fadeInUp" data-wow-delay="0.2s">
-                Frequently Asked Questions
+                {faqTitle}
               </h2>
             </div>
           </div>
@@ -157,35 +131,26 @@ const About = () => {
         margin: '0 auto'
       }}
     >
-      {/* Row with no gutters (override default negative margins) */}
       <div className="row align-items-center" style={{ margin: 0 }}>
-        {/* Left column - text */}
         <div className="col-lg-8" style={{ padding: '0 12px 0 0' }}>
           <h2 className="cta-title text-white wow fadeInUp">
-            Ready to Experience Our Services?
+            {ctaTitle}
           </h2>
           <p className="cta-text text-white wow fadeInUp" data-wow-delay="0.2s">
-            Contact us today to learn more about how we can help you.
+            {ctaText}
           </p>
         </div>
-
-        {/* Right column - button */}
         <div 
           className="col-lg-4 text-end" 
-          style={{ 
-            padding: '0 0 0 12px'   /* keep left padding for spacing between columns */
-          }}
+          style={{ padding: '0 0 0 12px' }}
         >
           <Link 
-            to="/booking" 
+            to={ctaBtnLink} 
             className="cus-btn btn-dark-cta wow fadeInUp" 
             data-wow-delay="0.3s"
-            style={{ 
-              marginRight: '0',      /* remove any right margin */
-              display: 'inline-block' 
-            }}
+            style={{ marginRight: '0', display: 'inline-block' }}
           >
-            Book Now
+            {ctaBtnText}
           </Link>
         </div>
       </div>

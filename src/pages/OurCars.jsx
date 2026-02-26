@@ -9,10 +9,12 @@ import { useSEO } from '../hooks/useSEO';
 import PageBanner from '../components/PageBanner';
 
 const OurCars = () => {
+  const { seo, resultsTitle, ctaTitle, ctaText, ctaPrimaryBtnText, ctaPrimaryBtnLink, ctaSecondaryBtnText, ctaSecondaryBtnLink } = siteData.pages.ourFleet;
+
   useSEO({
-    title: 'Our Fleet',
-    description: 'Browse our modern fleet of charter buses, coaches, mini-buses, and luxury vehicles available for group hire.',
-    keywords: 'charter bus fleet, coach hire, mini bus rental, luxury bus, party bus, vehicle fleet',
+    title: seo.title,
+    description: seo.description,
+    keywords: seo.keywords,
   });
   // Filter states
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -286,7 +288,7 @@ const OurCars = () => {
             <div className="fleet-content" ref={resultsRef}>
               <div className="fleet-header">
                 <div className="results-info">
-                  <h2 className="section-title">Choose Your Perfect Coach</h2>
+                  <h2 className="section-title">{resultsTitle}</h2>
                   <p className="results-count">
                     Showing <strong>{filteredCars.length}</strong> of {siteData.cars.length} vehicles
                     {/* <span className="sort-info"> • Sorted by seat capacity (smallest first)</span> */}
@@ -341,12 +343,12 @@ const OurCars = () => {
         <div className="container-fluid">
           <div className="cta-box">
             <div className="cta-content">
-              <h2 className="cta-title">Not Sure Which Bus to Choose?</h2>
-              <p className="cta-text">Our team will help you find the perfect vehicle for your group size and needs.</p>
+              <h2 className="cta-title">{ctaTitle}</h2>
+              <p className="cta-text">{ctaText}</p>
             </div>
             <div className="cta-buttons">
-              <Link to="/contact" className="cus-btn">Contact Us</Link>
-              <Link to="/booking" className="cus-btn secondary">Get a Quote</Link>
+              <Link to={ctaPrimaryBtnLink} className="cus-btn">{ctaPrimaryBtnText}</Link>
+              <Link to={ctaSecondaryBtnLink} className="cus-btn secondary">{ctaSecondaryBtnText}</Link>
             </div>
           </div>
         </div>

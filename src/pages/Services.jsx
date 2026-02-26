@@ -8,10 +8,12 @@ import { useSEO } from '../hooks/useSEO';
 import PageBanner from '../components/PageBanner';
 
 const Services = () => {
+  const { seo, tag, title, subtitle, processTag, processTitle, ctaTitle, ctaText, ctaBtnText, ctaBtnLink } = siteData.pages.services;
+
   useSEO({
-    title: 'Our Services',
-    description: 'Explore our full range of charter bus services – corporate transport, airport transfers, weddings, school trips, city tours, concerts, and more.',
-    keywords: 'charter bus services, corporate transport, airport transfer, wedding bus, school trip bus, city tour bus',
+    title: seo.title,
+    description: seo.description,
+    keywords: seo.keywords,
   });
   return (
     <>
@@ -20,16 +22,13 @@ const Services = () => {
       <section className="services-section pt-60 pb-60">
         <div className="container-fluid">
           <div className="text-center mb-40">
-            <span className="section-tag">What We Offer</span>
-            <h2 className="section-title">Premium Charter Services For You</h2>
-            <p className="section-subtitle">
-              We offer a comprehensive range of bus transportation services to meet all your needs.
-            </p>
+            <span className="section-tag">{tag}</span>
+            <h2 className="section-title">{title}</h2>
+            <p className="section-subtitle">{subtitle}</p>
           </div>
           <div className="services-grid">
             {siteData.services.map((service) => (
               <Link to={service.link} key={service.id} className="service-card">
-                {/* Service Image - if image exists, show it */}
                 {service.image && (
                   <div className="service-image">
                     <img src={service.image} alt={service.title} loading="lazy" />
@@ -55,8 +54,8 @@ const Services = () => {
       <section className="process-section pt-60 pb-60 bg-light">
         <div className="container-fluid">
           <div className="text-center mb-40">
-            <span className="section-tag">Our Process</span>
-            <h2 className="section-title">How We Work</h2>
+            <span className="section-tag">{processTag}</span>
+            <h2 className="section-title">{processTitle}</h2>
           </div>
           <div className="row row-gap-4">
             {siteData.whyChooseUs.map((item, index) => (
@@ -77,11 +76,11 @@ const Services = () => {
         <div className="container-fluid">
           <div className="cta-box">
             <div className="cta-content">
-              <h2 className="cta-title">Ready to Book Your Bus?</h2>
-              <p className="cta-text">Contact us today for a free quote on group transportation.</p>
+              <h2 className="cta-title">{ctaTitle}</h2>
+              <p className="cta-text">{ctaText}</p>
             </div>
             <div className="cta-buttons">
-              <Link to="/contact" className="cus-btn">Contact Us</Link>
+              <Link to={ctaBtnLink} className="cus-btn">{ctaBtnText}</Link>
             </div>
           </div>
         </div>

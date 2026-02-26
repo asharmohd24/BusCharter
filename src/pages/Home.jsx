@@ -7,55 +7,47 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { siteData } from '../data/data';
 import { useSEO } from '../hooks/useSEO';
-import ctaImage from '/assets/images/cta.png';
 import faqImage from '/assets/images/faq.png';
-import aboutImage from '/assets/images/abtus.png'
 const Home = () => {
-  useSEO({
-    title: 'Premium Group Transportation & Bus Rentals',
-    description: siteData.siteDescription,
-    keywords: siteData.seo.keywords,
-  });
-  const [activeTab, setActiveTab] = useState('transfers');
-  const [activeFaq, setActiveFaq] = useState(1);
+  const { seo, hero, servicesSection, aboutSection, howItWorksSection, faqSection, testimonialsSection, ctaSection, brandsSection } = siteData.pages.home;
 
-  const faqs = [
-    { id: 1, question: "How do I book a bus charter?", answer: "You can book a bus through our website by selecting your trip details, dates, group size, and preferred vehicle type." },
-    { id: 2, question: "What types of buses do you offer?", answer: "We offer a range of vehicles including luxury coaches, minibuses, party buses, and school buses to accommodate groups of all sizes." },
-    { id: 3, question: "How far in advance should I book?", answer: "We recommend booking 2-4 weeks in advance for most trips, and 3-6 months for weddings and large events." },
-  ];
+  useSEO({
+    title: seo.title,
+    description: seo.description,
+    keywords: seo.keywords,
+  });
+
+  const [activeFaq, setActiveFaq] = useState(faqSection.items[0]?.id ?? null);
 
   return (
     <>
       {/* ============================================
-          HERO SECTION - Image 1 Style
+          HERO SECTION
       ============================================ */}
       <section className="hero">
         <div className="hero__inner">
           <div className="hero__content">
             <div className="hero__tag">
               <span className="line"></span>
-              <span className="text">CHARTER THE BEST</span>
+              <span className="text">{hero.tag}</span>
               <span className="line"></span>
             </div>
 
             <h1 className="hero__title">
-              <span className="highlight">Travel</span> Together.<br />
-              <span className="underline">Arrive</span> in Style.
+              <span className="highlight">{hero.titleHighlight}</span> {hero.titleMain}<br />
+              <span className="underline">{hero.titleUnderline}</span> {hero.titleEnd}
             </h1>
 
-            <p className="hero__text">
-              Whether you're planning a corporate retreat, wedding celebration, or school trip, we've got you covered. From luxury coaches to reliable minibuses, our charter service is built for comfort, safety, and convenience. Book your group transportation in just a few clicks — no hassle, no worries.
-            </p>
+            <p className="hero__text">{hero.text}</p>
 
             <div className="hero__buttons">
-              <Link to="/booking" className="btn btn--primary">
+              <Link to={hero.primaryBtnLink} className="btn btn--primary">
                 <BusIcon />
-                <span>Book Now</span>
+                <span>{hero.primaryBtnText}</span>
               </Link>
-              <Link to="/our-fleet" className="btn btn--outline">
+              <Link to={hero.secondaryBtnLink} className="btn btn--outline">
                 <BusIcon />
-                <span>View Our Fleets</span>
+                <span>{hero.secondaryBtnText}</span>
               </Link>
             </div>
           </div>
@@ -63,7 +55,7 @@ const Home = () => {
           <div className="hero__image">
             <div className="hero__image-bg"></div>
             <div className="hero__image-wrapper">
-              <img src="/assets/images/herobus.png" alt="Hero Vehicle" />
+              <img src={hero.image} alt={hero.imageAlt} />
             </div>
           </div>
         </div>
@@ -73,8 +65,8 @@ const Home = () => {
       <section className="section">
         <div className="section__container">
           <div className="section__header">
-            <div className="section__tag"><span className="line"></span><span>WHAT WE OFFER</span><span className="line"></span></div>
-            <h2 className="section__title">Our Premium Services</h2>
+            <div className="section__tag"><span className="line"></span><span>{servicesSection.tag}</span><span className="line"></span></div>
+            <h2 className="section__title">{servicesSection.title}</h2>
           </div>
           <div className="services-grid">
             {siteData.services.map((service) => (
@@ -95,9 +87,11 @@ const Home = () => {
       <section className="section section--gray">
         <div className="section__container">
           <div className="about-grid">
-            <div className="about-image"> <img src={aboutImage} alt="About Us" /></div>
+            <div className="about-image">
+              <img src={aboutSection.image} alt={aboutSection.imageAlt} />
+            </div>
             <div className="about-content">
-              <div className="section__tag section__tag--left"><span className="line"></span><span>ABOUT US</span><span className="line"></span></div>
+              <div className="section__tag section__tag--left"><span className="line"></span><span>{aboutSection.tag}</span><span className="line"></span></div>
               <h2 className="section__title">{siteData.about.title}</h2>
               <p>{siteData.about.description}</p>
               <div className="stats-grid">
@@ -105,7 +99,7 @@ const Home = () => {
                   <div key={i} className="stat"><span className="stat__number">{stat.number}</span><span className="stat__label">{stat.label}</span></div>
                 ))}
               </div>
-              <Link to="/about" className="btn btn--primary">Learn More</Link>
+              <Link to={aboutSection.btnLink} className="btn btn--primary">{aboutSection.btnText}</Link>
             </div>
           </div>
         </div>
@@ -115,8 +109,8 @@ const Home = () => {
       <section className="section">
         <div className="section__container">
           <div className="section__header">
-            <div className="section__tag"><span className="line"></span><span>WHY CHOOSE US</span><span className="line"></span></div>
-            <h2 className="section__title">How It Works</h2>
+            <div className="section__tag"><span className="line"></span><span>{howItWorksSection.tag}</span><span className="line"></span></div>
+            <h2 className="section__title">{howItWorksSection.title}</h2>
           </div>
           <div className="steps-grid">
             {siteData.whyChooseUs.map((item, i) => (
@@ -131,16 +125,16 @@ const Home = () => {
       </section>
 
       {/* ============================================
-          FAQ SECTION - Image 2 Style (Full Width)
+          FAQ SECTION
       ============================================ */}
       <section className="faq">
         <div className="faq__content">
-          <div className="section__tag section__tag--left"><span className="line"></span><span>NEED HELP?</span><span className="line"></span></div>
-          <h2 className="section__title">Frequently Asked <span className="highlight">Questions</span></h2>
-          <p className="faq__subtitle">Find answers to common questions about our rental process, repair services, payments, and more.</p>
+          <div className="section__tag section__tag--left"><span className="line"></span><span>{faqSection.tag}</span><span className="line"></span></div>
+          <h2 className="section__title">{faqSection.titleStart} <span className="highlight">{faqSection.titleHighlight}</span></h2>
+          <p className="faq__subtitle">{faqSection.subtitle}</p>
 
           <div className="faq__list">
-            {faqs.map((faq) => (
+            {faqSection.items.map((faq) => (
               <div key={faq.id} className={`faq__item ${activeFaq === faq.id ? 'active' : ''}`}>
                 <div className="faq__question" onClick={() => setActiveFaq(activeFaq === faq.id ? null : faq.id)}>
                   <h5>{faq.question}</h5>
@@ -162,8 +156,8 @@ const Home = () => {
       <section className="section section--gray">
         <div className="section__container">
           <div className="section__header">
-            <div className="section__tag"><span className="line"></span><span>TESTIMONIALS</span><span className="line"></span></div>
-            <h2 className="section__title">What Our Customers Say</h2>
+            <div className="section__tag"><span className="line"></span><span>{testimonialsSection.tag}</span><span className="line"></span></div>
+            <h2 className="section__title">{testimonialsSection.title}</h2>
           </div>
           <div className="testimonials-grid">
             {siteData.testimonials.map((t) => (
@@ -178,24 +172,23 @@ const Home = () => {
       </section>
 
       {/* ============================================
-          CTA BANNER - Image 3 Style (Full Width Rounded)
+          CTA BANNER
       ============================================ */}
       <section className="cta-wrapper">
         <div className="cta">
           <div className="cta__image">
-            <img
-              src={ctaImage}
-              alt="Luxury coach bus ready for your group"
-              className="cta__img"
-            />
+            <img src={ctaSection.image} alt={ctaSection.imageAlt} className="cta__img" />
           </div>
 
           <div className="cta__content">
-            <h2><span className="highlight">Book</span> Your Bus or Get a<br /><span className="highlight">Quote</span> in Minutes</h2>
-            <p>Quick bookings, reliable service, and a fleet you can trust.</p>
+            <h2>
+              <span className="highlight">{ctaSection.titleHighlight1}</span> {ctaSection.titleMiddle}<br />
+              <span className="highlight">{ctaSection.titleHighlight2}</span> {ctaSection.titleEnd}
+            </h2>
+            <p>{ctaSection.text}</p>
             <div className="cta__buttons">
-              <Link to="/booking" className="btn btn--primary"><BusIcon /><span>Get a Quote</span></Link>
-              <Link to="/our-fleet" className="btn btn--outline-light"><BusIcon /><span>View Our Fleet</span></Link>
+              <Link to={ctaSection.primaryBtnLink} className="btn btn--primary"><BusIcon /><span>{ctaSection.primaryBtnText}</span></Link>
+              <Link to={ctaSection.secondaryBtnLink} className="btn btn--outline-light"><BusIcon /><span>{ctaSection.secondaryBtnText}</span></Link>
             </div>
           </div>
         </div>
@@ -205,8 +198,8 @@ const Home = () => {
       <section className="section">
         <div className="section__container">
           <div className="section__header">
-            <div className="section__tag"><span className="line"></span><span>OUR PARTNERS</span><span className="line"></span></div>
-            <h2 className="section__title">Trusted By Leading Brands</h2>
+            <div className="section__tag"><span className="line"></span><span>{brandsSection.tag}</span><span className="line"></span></div>
+            <h2 className="section__title">{brandsSection.title}</h2>
           </div>
           <div className="brands-grid">
             {siteData.brands.map((b) => (
