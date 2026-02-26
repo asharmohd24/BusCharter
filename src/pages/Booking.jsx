@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { siteData } from '../data/data';
 import { useSEO } from '../hooks/useSEO';
 import PageBanner from '../components/PageBanner';
 import { getRecaptchaToken } from '../utils/recaptcha';
@@ -257,7 +258,7 @@ const countries = [
 ];
 
 // Searchable country code dropdown component
-const CountryCodeSelect = ({ value, onChange }) => {
+const CountryCodeSelect = ({ value, onChange, searchPlaceholder = 'Search country...', noCountriesText = 'No countries found' }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const dropdownRef = useRef(null);
@@ -325,7 +326,7 @@ const CountryCodeSelect = ({ value, onChange }) => {
           <div style={{ padding: '8px', borderBottom: '1px solid var(--color-gray)' }}>
             <input
               type="text"
-              placeholder="Search country..."
+              placeholder={searchPlaceholder}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="form-control"
@@ -363,7 +364,7 @@ const CountryCodeSelect = ({ value, onChange }) => {
             ))}
             {filteredCountries.length === 0 && (
               <div style={{ padding: '12px', textAlign: 'center', color: 'var(--color-text-light)' }}>
-                No countries found
+                {noCountriesText}
               </div>
             )}
           </div>
@@ -374,10 +375,11 @@ const CountryCodeSelect = ({ value, onChange }) => {
 };
 
 const Booking = () => {
+  const { seo, bannerTitle, formHeader, tabs, fields, submitText, submittingText, configErrorText, countrySearchPlaceholder, noCountriesText } = siteData.pages.booking;
   useSEO({
-    title: 'Book a Charter Bus',
-    description: 'Request a charter bus booking online. Fill in your trip details and our team will confirm your group transportation quickly.',
-    keywords: 'book charter bus, bus rental booking, group transport reservation, hire a bus online',
+    title: seo.title,
+    description: seo.description,
+    keywords: seo.keywords,
   });
   const [activeTab, setActiveTab] = useState('one-way');
   const [formData, setFormData] = useState({
@@ -614,7 +616,7 @@ const Booking = () => {
 
   return (
     <>
-      <PageBanner title="Book Your Ride" />
+      <PageBanner title={bannerTitle} />
 
       <section className="booking-form-section pt-60 pb-60">
         <div className="container-fluid">
@@ -622,13 +624,13 @@ const Booking = () => {
             <div className="col-lg-8">
               <div className="booking-form-wrapper">
                 <div className="booking-form-header">
-                  <h3>Book Your Transportation</h3>
-                  <p>Fill in the details below to request a booking</p>
+                  <h3>{formHeader.title}</h3>
+                  <p>{formHeader.subtitle}</p>
                 </div>
 
                 {apiKeyMissing && import.meta.env.DEV && (
                   <div className="alert alert-danger" style={{ marginBottom: '20px' }}>
-                    <strong>Configuration Error:</strong> Google Maps API key is missing.
+                    <strong>{configErrorText}</strong>
                   </div>
                 )}
 
@@ -638,14 +640,14 @@ const Booking = () => {
                     className={`booking-tab ${activeTab === 'one-way' ? 'active' : ''}`}
                     onClick={() => setActiveTab('one-way')}
                   >
-                    One Way
+                    {tabs.oneWay}
                   </button>
                   <button
                     type="button"
                     className={`booking-tab ${activeTab === 'round-trip' ? 'active' : ''}`}
                     onClick={() => setActiveTab('round-trip')}
                   >
-                    Round Trip
+                    {tabs.roundTrip}
                   </button>
                 </div>
 
@@ -653,14 +655,14 @@ const Booking = () => {
                   <div className="booking-form-grid">
                     {/* Pickup Location */}
                     <div className="form-group">
-                      <label>Pickup Location *</label>
+                      <label>{fields.pickupLocation.label}</label>
                       <div className="input-icon"><i className="fa fa-map-marker-alt"></i></div>
                       <input
                         type="text"
                         name="pickupLocation"
                         ref={pickupRef}
                         className="form-control"
-                        placeholder="Enter pickup address"
+                        placeholder={fields.pickupLocation.placeholder}
                         value={formData.pickupLocation}
                         onChange={handleChange}
                         required
@@ -670,14 +672,14 @@ const Booking = () => {
 
                     {/* Dropoff Location */}
                     <div className="form-group">
-                      <label>Drop-off Location *</label>
+                      <label>{fields.dropoffLocation.label}</label>
                       <div className="input-icon"><i className="fa fa-map-marker"></i></div>
                       <input
                         type="text"
                         name="dropoffLocation"
                         ref={dropoffRef}
                         className="form-control"
-                        placeholder="Enter drop-off address"
+                        placeholder={fields.dropoffLocation.placeholder}
                         value={formData.dropoffLocation}
                         onChange={handleChange}
                         required
@@ -687,7 +689,7 @@ const Booking = () => {
 
                     {/* Pickup Date */}
                     <div className="form-group">
-                      <label>Pickup Date *</label>
+                      <label>{fields.pickupDate.label}</label>
                       <div className="date-time-wrapper">
                         <input
                           type="date"
@@ -706,7 +708,7 @@ const Booking = () => {
 
                     {/* Pickup Time */}
                     <div className="form-group">
-                      <label>Pickup Time *</label>
+                      <label>{fields.pickupTime.label}</label>
                       <div className="date-time-wrapper">
                         <input
                           type="time"
@@ -726,7 +728,7 @@ const Booking = () => {
                     {activeTab === 'round-trip' && (
                       <>
                         <div className="form-group">
-                          <label>Return Date *</label>
+                          <label>{fields.returnDate.label}</label>
                           <div className="date-time-wrapper">
                             <input
                               type="date"
@@ -743,7 +745,7 @@ const Booking = () => {
                           </div>
                         </div>
                         <div className="form-group">
-                          <label>Return Time *</label>
+                          <label>{fields.returnTime.label}</label>
                           <div className="date-time-wrapper">
                             <input
                               type="time"
@@ -763,12 +765,12 @@ const Booking = () => {
 
                     {/* Passengers */}
                     <div className="form-group full-width">
-                      <label>Number of Passengers</label>
+                      <label>{fields.passengers.label}</label>
                       <input
                         type="number"
                         name="passengers"
                         className="form-control"
-                        placeholder="Enter number (e.g., 4)"
+                        placeholder={fields.passengers.placeholder}
                         value={formData.passengers}
                         onChange={handleChange}
                         min="1"
@@ -777,12 +779,12 @@ const Booking = () => {
 
                     {/* Name */}
                     <div className="form-group">
-                      <label>Your Name *</label>
+                      <label>{fields.name.label}</label>
                       <input
                         type="text"
                         name="name"
                         className="form-control"
-                        placeholder="Full name"
+                        placeholder={fields.name.placeholder}
                         value={formData.name}
                         onChange={handleChange}
                         required
@@ -791,12 +793,12 @@ const Booking = () => {
 
                     {/* Email */}
                     <div className="form-group">
-                      <label>Email Address *</label>
+                      <label>{fields.email.label}</label>
                       <input
                         type="email"
                         name="email"
                         className="form-control"
-                        placeholder="your@email.com"
+                        placeholder={fields.email.placeholder}
                         value={formData.email}
                         onChange={handleChange}
                         required
@@ -805,12 +807,14 @@ const Booking = () => {
 
                     {/* Phone with country code dropdown */}
                     <div className="form-group full-width">
-                      <label>Phone Number *</label>
+                      <label>{fields.phone.label}</label>
                       <div className="phone-input-row">
                         <div className="country-select-wrapper">
                           <CountryCodeSelect
                             value={formData.phoneCountry}
                             onChange={handleCountryChange}
+                            searchPlaceholder={countrySearchPlaceholder}
+                            noCountriesText={noCountriesText}
                           />
                         </div>
                         <div className="phone-number-wrapper">
@@ -829,11 +833,11 @@ const Booking = () => {
 
                     {/* Special requests */}
                     <div className="form-group full-width">
-                      <label>Special Requests</label>
+                      <label>{fields.notes.label}</label>
                       <textarea
                         name="notes"
                         className="form-control"
-                        placeholder="Any special requirements..."
+                        placeholder={fields.notes.placeholder}
                         value={formData.notes}
                         onChange={handleChange}
                         rows="3"
@@ -861,7 +865,7 @@ const Booking = () => {
                           <path d="M4 12v5a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1h10v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-5"/>
                           <circle cx="7.5" cy="18.5" r="1.5"/><circle cx="16.5" cy="18.5" r="1.5"/>
                         </svg>
-                        {isSubmitting ? 'Submitting...' : 'Request Booking'}
+                        {isSubmitting ? submittingText : submitText}
                       </button>
                     </div>
                   </div>

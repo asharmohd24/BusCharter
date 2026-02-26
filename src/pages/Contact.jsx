@@ -258,8 +258,8 @@ const countries = [
   { code: 'ZW', dial: '+263', name: 'Zimbabwe' }
 ];
 
-// CountryCodeSelect component (same as above)
-const CountryCodeSelect = ({ value, onChange }) => {
+// CountryCodeSelect component
+const CountryCodeSelect = ({ value, onChange, searchPlaceholder = 'Search country...', noCountriesText = 'No countries found' }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const dropdownRef = useRef(null);
@@ -324,7 +324,7 @@ const CountryCodeSelect = ({ value, onChange }) => {
           <div style={{ padding: '8px', borderBottom: '1px solid var(--color-gray)' }}>
             <input
               type="text"
-              placeholder="Search country..."
+              placeholder={searchPlaceholder}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="form-control"
@@ -362,7 +362,7 @@ const CountryCodeSelect = ({ value, onChange }) => {
             ))}
             {filteredCountries.length === 0 && (
               <div style={{ padding: '12px', textAlign: 'center', color: 'var(--color-text-light)' }}>
-                No countries found
+                {noCountriesText}
               </div>
             )}
           </div>
@@ -373,10 +373,11 @@ const CountryCodeSelect = ({ value, onChange }) => {
 };
 
 const Contact = () => {
+  const { seo, bannerTitle, infoSection, formSection } = siteData.pages.contact;
   useSEO({
-    title: 'Contact Us',
-    description: `Get in touch with Global Bus Charter. Call us at ${siteData.contact.phone} or email ${siteData.contact.email} to book your group transportation today.`,
-    keywords: 'contact global bus charter, bus rental inquiry, book charter bus, group transport quote',
+    title: seo.title,
+    description: seo.description,
+    keywords: seo.keywords,
   });
   const [phoneCountry, setPhoneCountry] = useState('US');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -498,7 +499,7 @@ const Contact = () => {
 
   return (
     <>
-      <PageBanner title="Contact Us" />
+      <PageBanner title={bannerTitle} />
 
       {/* Contact Info Section */}
       <section className="contact-section pt-60 pb-60">
@@ -510,7 +511,7 @@ const Contact = () => {
                   <path d="M20 0C11.7157 0 5 6.71573 5 15C5 25.5 20 40 20 40C20 40 35 25.5 35 15C35 6.71573 28.2843 0 20 0ZM20 22C16.134 22 13 18.866 13 15C13 11.134 16.134 8 20 8C23.866 8 27 11.134 27 15C27 18.866 23.866 22 20 22Z" fill="white"/>
                 </svg>
               </div>
-              <h6>Our Location</h6>
+              <h6>{infoSection.locationLabel}</h6>
               <p>{siteData.contact.address.full}</p>
             </div>
 
@@ -520,7 +521,7 @@ const Contact = () => {
                   <path d="M36.616 29.5174L31.616 24.5174C30.134 23.0354 27.634 23.1674 26.334 24.8014L24.6 27.1174C24.334 27.5174 23.784 27.6674 23.334 27.4674C21.366 26.4674 19.166 25.0674 17.066 22.9674C14.966 20.8674 13.566 18.6674 12.566 16.6994C12.366 16.2494 12.516 15.6994 12.916 15.4334L15.234 14.6994C16.866 13.3994 17 10.8994 15.516 9.41744L10.516 4.41744C9.03401 2.93544 6.53401 3.0674 5.23401 4.7014L2.36601 8.3174C0.966006 10.0674 0.334006 12.3014 0.666006 14.4854C1.46601 19.6194 4.53401 25.5014 10.034 30.9994C15.534 36.4994 21.416 39.5674 26.55 40.3674C28.734 40.6994 30.966 40.0674 32.716 38.6674L36.334 35.7994C37.966 34.4994 38.1 31.9994 36.616 29.5174Z" fill="white"/>
                 </svg>
               </div>
-              <h6>Contact</h6>
+              <h6>{infoSection.contactLabel}</h6>
               <a href={`tel:${siteData.contact.phoneFormatted}`}>{siteData.contact.phone}</a>
               <a href={`mailto:${siteData.contact.email}`}>{siteData.contact.email}</a>
             </div>
@@ -532,7 +533,7 @@ const Contact = () => {
                   <path d="M22 10H18V22H30V18H22V10Z" fill="white"/>
                 </svg>
               </div>
-              <h6>Working Hours</h6>
+              <h6>{infoSection.hoursLabel}</h6>
               <p>{siteData.contact.workingHours.weekdays}</p>
               <p>{siteData.contact.workingHours.weekend}</p>
             </div>
@@ -546,11 +547,9 @@ const Contact = () => {
           <div className="row justify-content-center">
             <div className="col-lg-8">
               <div className="text-center mb-32">
-                <span className="section-tag">Get In Touch</span>
-                <h2 className="section-title">Send Us A Message</h2>
-                <p className="section-subtitle">
-                  Have a question or need assistance? Fill out the form below and we'll get back to you as soon as possible.
-                </p>
+                <span className="section-tag">{formSection.tag}</span>
+                <h2 className="section-title">{formSection.title}</h2>
+                <p className="section-subtitle">{formSection.subtitle}</p>
               </div>
 
               <div className="form-section">
@@ -569,7 +568,7 @@ const Contact = () => {
                   <div className="row row-gap-4">
                     <div className="col-md-6">
                       <div className="input-block">
-                        <label htmlFor="name">Full Name *</label>
+                        <label htmlFor="name">{formSection.fields.name.label}</label>
                         <input
                           type="text"
                           id="name"
@@ -577,14 +576,14 @@ const Contact = () => {
                           className={`form-control ${errors.name ? 'is-invalid' : ''}`}
                           value={values.name}
                           onChange={handleChange}
-                          placeholder="Your name"
+                          placeholder={formSection.fields.name.placeholder}
                         />
                         {errors.name && <span className="invalid-feedback">{errors.name}</span>}
                       </div>
                     </div>
                     <div className="col-md-6">
                       <div className="input-block">
-                        <label htmlFor="email">Email Address *</label>
+                        <label htmlFor="email">{formSection.fields.email.label}</label>
                         <input
                           type="email"
                           id="email"
@@ -592,7 +591,7 @@ const Contact = () => {
                           className={`form-control ${errors.email ? 'is-invalid' : ''}`}
                           value={values.email}
                           onChange={handleChange}
-                          placeholder="Your email"
+                          placeholder={formSection.fields.email.placeholder}
                         />
                         {errors.email && <span className="invalid-feedback">{errors.email}</span>}
                       </div>
@@ -601,12 +600,14 @@ const Contact = () => {
                     {/* Phone with country code dropdown */}
                     <div className="col-md-6">
                       <div className="input-block">
-                        <label htmlFor="phoneNumber">Phone Number</label>
+                        <label htmlFor="phoneNumber">{formSection.fields.phone.label}</label>
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
                           <div style={{ flexShrink: 0, width: '110px' }}>
                             <CountryCodeSelect
                               value={phoneCountry}
                               onChange={handleCountryChange}
+                              searchPlaceholder={formSection.countrySearchPlaceholder}
+                              noCountriesText={formSection.noCountriesText}
                             />
                           </div>
                           <div style={{ flex: 1 }}>
@@ -617,7 +618,7 @@ const Contact = () => {
                               className="form-control"
                               value={phoneNumber}
                               onChange={handlePhoneNumberChange}
-                              placeholder="Phone number"
+                              placeholder={formSection.fields.phone.placeholder}
                               style={{ height: '100%' }}
                             />
                           </div>
@@ -627,7 +628,7 @@ const Contact = () => {
 
                     <div className="col-md-6">
                       <div className="input-block">
-                        <label htmlFor="subject">Subject</label>
+                        <label htmlFor="subject">{formSection.fields.subject.label}</label>
                         <input
                           type="text"
                           id="subject"
@@ -635,20 +636,20 @@ const Contact = () => {
                           className="form-control"
                           value={values.subject}
                           onChange={handleChange}
-                          placeholder="Message subject"
+                          placeholder={formSection.fields.subject.placeholder}
                         />
                       </div>
                     </div>
                     <div className="col-12">
                       <div className="input-block">
-                        <label htmlFor="message">Message *</label>
+                        <label htmlFor="message">{formSection.fields.message.label}</label>
                         <textarea
                           id="message"
                           name="message"
                           className={`form-control ${errors.message ? 'is-invalid' : ''}`}
                           value={values.message}
                           onChange={handleChange}
-                          placeholder="Your message..."
+                          placeholder={formSection.fields.message.placeholder}
                           rows="5"
                         />
                         {errors.message && <span className="invalid-feedback">{errors.message}</span>}
@@ -660,7 +661,7 @@ const Contact = () => {
                         className="cus-btn"
                         disabled={isSubmitting}
                       >
-                        {isSubmitting ? 'Sending...' : 'Send Message'}
+                        {isSubmitting ? formSection.submittingText : formSection.submitText}
                       </button>
                     </div>
                   </div>
@@ -686,7 +687,7 @@ const Contact = () => {
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Our Location"
+              title={formSection.mapTitle}
             />
           </div>
         </div>
