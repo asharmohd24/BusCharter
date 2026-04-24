@@ -457,8 +457,6 @@ const Booking = () => {
       return;
     }
 
-    if (!countryDetected) return;
-
     if (!window.google) {
       const script = document.createElement('script');
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
@@ -477,7 +475,6 @@ const Booking = () => {
     function initAutocomplete() {
       const options = {
         types: ['geocode'],
-        componentRestrictions: { country: detectedCountry.toLowerCase() },
         fields: ['formatted_address', 'geometry', 'name']
       };
 
@@ -514,7 +511,7 @@ const Booking = () => {
         autocompleteDropoff.current = null;
       }
     };
-  }, [countryDetected]);
+  }, []);
 
   useEffect(() => {
     if (formData.pickupDate && formData.returnDate && formData.returnDate < formData.pickupDate) {
